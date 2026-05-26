@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MARDUK TEST – Live Telemetry</title>
+    <style>
+        body {
+            background: #0a3d2b;
+            font-family: 'Courier New', monospace;
+            color: #e0f2e9;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #0f4d36;
+            border-radius: 24px;
+            padding: 30px;
+        }
+        button {
+            background: #2e7d64;
+            border: none;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 12px 24px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .stop {
+            background: #c2410c;
+        }
+        .telemetry {
+            background: #073120;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 1rem;
+        }
+        .status {
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .green {
+            color: #80e0b0;
+        }
+        .red {
+            color: #f08080;
+        }
+        hr {
+            border-color: #1f6e58;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ MARDUK TEST</h1>
+    <p>Owner: Seliim Ahmed | Live Telemetry</p>
+    <button id="startBtn">▶ START</button>
+    <button id="stopBtn" class="stop">⏹ STOP</button>
+    <div id="status" class="status red">● HALTED</div>
+    <div id="telemetry" class="telemetry">Telemetry will appear here when START is pressed.</div>
+    <hr>
+    <div id="report"></div>
+    <p style="font-size:0.7rem; margin-top:20px;">Real-time rejection rate ~97% | Energy saved estimated</p>
+</div>
+
+<script>
+    let isRunning = false;
+    let interval = null;
+    let totalBytes = 0;
+    let rejectedBytes = 0;
+    let telemetryDiv = document.getElementById('telemetry');
+    let statusDiv = document.getElementById('status');
+    let reportDiv = document.getElementById('report');
+
+    function updateTelemetry() {
+        if (!isRunning) return;
+        const incoming = Math.floor(Math.random() * 1000) + 100;
+        totalBytes += incoming;
+        const reject = Math.random() < 0.97;
+        if (reject) rejectedBytes += incoming;
+        
+        const accepted = totalBytes - rejectedBytes;
+        const rejectionRate = totalBytes === 0 ? 0 : (rejectedBytes / totalBytes) * 100;
+        const energySaved = (totalBytes * 0.0001).toFixed(4);
+        
+        telemetryDiv.innerHTML = `
+            <strong>📊 Live Telemetry</strong><br>
+            Total data: ${totalBytes} bytes<br>
+            Rejected: ${rejectedBytes} bytes<br>
+            Accepted: ${accepted} bytes<br>
+            Rejection rate: ${rejectionRate.toFixed(2)}%<br>
+            Energy saved: ${energySaved} kWh
+        `;
+        reportDiv.innerHTML = `
+            <strong>📈 Cumulative Report</strong><br>
+            Total processed: ${totalBytes} bytes | Rejected: ${rejectionRate.toFixed(2)}% | Saved: ${energySaved} kWh
+        `;
+    }
+
+    function startEngine() {
+        if (isRunning) return;
+        isRunning = true;
+        totalBytes = 0;
+        rejectedBytes = 0;
+        statusDiv.innerHTML = '● ACTIVE (rejecting noise)';
+        statusDiv.className = 'status green';
+        if (interval) clearInterval(interval);
+        interval = setInterval(() => updateTelemetry(), 500);
+        telemetryDiv.innerHTML = 'Telemetry stream starting...';
+        reportDiv.innerHTML = '';
+    }
+
+    function stopEngine() {
+        if (!isRunning) return;
+        isRunning = false;
+        if (interval) clearInterval(interval);
+        interval = null;
+        statusDiv.innerHTML = '● HALTED';
+        statusDiv.className = 'status red';
+        updateTelemetry(); // final update
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startEngine);
+    document.getElementById('stopBtn').addEventListener('click', stopEngine);
+</script>
+</body>
+</html>
