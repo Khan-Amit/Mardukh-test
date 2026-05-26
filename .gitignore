@@ -1,26 +1,10 @@
 # OS garbage
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Editor files
-.vscode/
-.idea/
+# Editor temp files
 *.swp
 *~
 
-# Logs and temporary files
+# Logs (optional)
 *.log
-*.tmp
-*.cache
-
-# Local test files (keep only committed version)
-test_*.html
-temp_*
-
-# Node modules (if any)
-node_modules/
-
-# Build outputs
-dist/
-build/
